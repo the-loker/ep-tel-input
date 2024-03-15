@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
 
   import telInput from './components/tel-input/tel-input.vue';
 
@@ -7,5 +7,6 @@
 </script>
 
 <template>
+  {{ phone }}
   <telInput v-model="phone" />
 </template>
