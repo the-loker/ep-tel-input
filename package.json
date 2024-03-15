@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "element-plus": "^2.6.1",
+    "libphonenumber-js": "^1.10.58",
     "vue": "^3.4.21"
   },
   "devDependencies": {
