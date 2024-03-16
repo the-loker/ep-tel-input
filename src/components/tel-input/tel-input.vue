@@ -6,13 +6,13 @@
   const props = defineProps(inputProps);
   const emits = defineEmits(inputEmits);
 
-  const { phoneValue, selectedCounry, isValid } = useTelInput(props, emits);
+  const { value, selectedCounry, isValid } = useTelInput(props, emits);
 
   defineExpose({ isValid });
 </script>
 
 <template>
-  <el-input v-model="phoneValue">
+  <el-input v-model="value" type="tel">
     <template #prepend>
       <el-select
         v-model="selectedCounry"

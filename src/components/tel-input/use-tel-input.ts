@@ -1,49 +1,49 @@
-import { ref, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { getPhoneCode, parsePhoneNumberFromString } from 'libphonenumber-js';
 
 import type { SetupContext } from 'vue';
 import type { CountryCode } from 'libphonenumber-js';
 import type { TProps, TEmits } from './tel-input';
 
+function makeInternationalPhone(phoneStr: string, countryCode: CountryCode) {
+  const phone = parsePhoneNumberFromString(phoneStr, countryCode);
+
+  if (!phone) return phoneStr;
+
+  return phone.formatInternational();
+}
+
+function getInternationalPhoneCode(countryCode: CountryCode) {
+  return `+${getPhoneCode(countryCode)}`;
+}
+
 export const useTelInput = (
   props: TProps,
   emits: SetupContext<TEmits>['emit']
 ) => {
-  const phoneValue = ref<string>('');
   const selectedCounry = ref<CountryCode>('RU');
 
-  function watchPhoneValue(value: string) {
-    if (!value || !value.replace(/\D/g, '')) {
-      phoneValue.value = `+${getPhoneCode(selectedCounry.value)}`;
+  const value = computed({
+    get() {
+      return phoneFromated.value;
+    },
+    set(value) {
+      if (!value) value = '';
 
-      emits('update:modelValue', phoneValue.value);
-
-      return;
-    }
-
-    const phone = parsePhoneNumberFromString(value, selectedCounry.value);
-
-    if (!phone) {
-      return emits('update:modelValue', value);
-    }
-
-    if (phone) {
-      phoneValue.value = phone.formatInternational();
-
-      emits('update:modelValue', phone.formatInternational());
-    }
-  }
-
-  function setDefaultValue(countryCode: CountryCode): void {
-    phoneValue.value = `+${getPhoneCode(countryCode)}`;
-  }
-
-  watch(phoneValue, watchPhoneValue, {
-    deep: true,
-    immediate: true,
+      emits(
+        'update:modelValue',
+        makeInternationalPhone(value, selectedCounry.value)
+      );
+    },
   });
 
-  watch(selectedCounry, setDefaultValue, { deep: true });
+  const phoneFromated = computed(() => {
+    if (!props.modelValue) {
+      return getInternationalPhoneCode(selectedCounry.value);
+    }
+
+    return makeInternationalPhone(props.modelValue, selectedCounry.value);
+  });
 
   function isValid(): boolean {
     const phone = parsePhoneNumberFromString(
@@ -57,7 +57,7 @@ export const useTelInput = (
   }
 
   return {
-    phoneValue,
+    value,
     selectedCounry,
     isValid,
   };
