@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { getPhoneCode, parsePhoneNumberFromString } from 'libphonenumber-js';
 
 import type { SetupContext } from 'vue';
@@ -11,6 +11,12 @@ function makeInternationalPhone(phoneStr: string, countryCode: CountryCode) {
   if (!phone) return phoneStr;
 
   return phone.formatInternational();
+}
+
+function clearPhoneCode(value: string, countryCode: CountryCode) {
+  let regexp = new RegExp(`\\${getInternationalPhoneCode(countryCode)}`);
+
+  return value.replace(regexp, '').trim();
 }
 
 function getInternationalPhoneCode(countryCode: CountryCode) {
@@ -28,7 +34,7 @@ export const useTelInput = (
       return phoneFromated.value;
     },
     set(value) {
-      if (!value) value = '';
+      if (!value || !value.replace(/\D/g, '')) value = '';
 
       emits(
         'update:modelValue',
@@ -37,8 +43,24 @@ export const useTelInput = (
     },
   });
 
+  watch(selectedCounry, changePhoneCode, { deep: true });
+
+  function changePhoneCode(
+    newCountryCode: CountryCode,
+    oldCountryCode: CountryCode
+  ) {
+    if (!props.modelValue) return;
+
+    const cleanPhone = clearPhoneCode(props.modelValue, oldCountryCode);
+
+    emits(
+      'update:modelValue',
+      `${getInternationalPhoneCode(newCountryCode)} ${cleanPhone}`
+    );
+  }
+
   const phoneFromated = computed(() => {
-    if (!props.modelValue) {
+    if (!props.modelValue || !props.modelValue.replace(/\D/g, '')) {
       return getInternationalPhoneCode(selectedCounry.value);
     }
 
