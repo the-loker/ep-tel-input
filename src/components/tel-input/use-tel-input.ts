@@ -1,27 +1,16 @@
 import { ref, computed, watch } from 'vue';
-import { getPhoneCode, parsePhoneNumberFromString } from 'libphonenumber-js';
+
+import {
+  phoneValidate,
+  clearPhoneCode,
+  makeInternationalPhone,
+  cleanInvalidCharacters,
+  getInternationalPhoneCode,
+} from './utils';
 
 import type { SetupContext } from 'vue';
 import type { CountryCode } from 'libphonenumber-js';
 import type { TProps, TEmits } from './tel-input';
-
-function makeInternationalPhone(phoneStr: string, countryCode: CountryCode) {
-  const phone = parsePhoneNumberFromString(phoneStr, countryCode);
-
-  if (!phone) return phoneStr;
-
-  return phone.formatInternational();
-}
-
-function clearPhoneCode(value: string, countryCode: CountryCode) {
-  let regexp = new RegExp(`\\${getInternationalPhoneCode(countryCode)}`);
-
-  return value.replace(regexp, '').trim();
-}
-
-function getInternationalPhoneCode(countryCode: CountryCode) {
-  return `+${getPhoneCode(countryCode)}`;
-}
 
 export const useTelInput = (
   props: TProps,
@@ -35,6 +24,10 @@ export const useTelInput = (
     },
     set(value) {
       if (!value || !value.replace(/\D/g, '')) value = '';
+
+      if (value) {
+        value = cleanInvalidCharacters(value);
+      }
 
       emits(
         'update:modelValue',
@@ -68,14 +61,7 @@ export const useTelInput = (
   });
 
   function isValid(): boolean {
-    const phone = parsePhoneNumberFromString(
-      props.modelValue,
-      selectedCounry.value
-    );
-
-    if (!phone) return false;
-
-    return phone.isValid();
+    return phoneValidate(props.modelValue, selectedCounry.value);
   }
 
   return {
