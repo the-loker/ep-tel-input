@@ -30,7 +30,7 @@ export function makeInternationalPhone(
   return phone.formatInternational();
 }
 
-export function cleanInvalidCharacters(value: string) {
+export function cleanInvalidCharacters(value: string): string {
   const results = value.match(/^\+[0-9\s]*/g);
 
   if (!results) return value;
@@ -38,6 +38,16 @@ export function cleanInvalidCharacters(value: string) {
   return results.join('');
 }
 
-export function getInternationalPhoneCode(countryCode: CountryCode) {
+export function getInternationalPhoneCode(countryCode: CountryCode): string {
   return `+${getPhoneCode(countryCode)}`;
+}
+
+export function countryMatches(
+  searchCountry: string,
+  countryName: string
+): boolean {
+  const searchCountryStr = searchCountry.toLocaleLowerCase();
+  const countryNameStr = countryName.toLocaleLowerCase();
+
+  return countryNameStr.includes(searchCountryStr);
 }
