@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { ref, defineProps, defineEmits, defineExpose } from 'vue';
+  import { defineProps, defineEmits, defineExpose } from 'vue';
   import { inputProps, inputEmits } from './tel-input';
   import { useTelInput } from './use-tel-input';
   import { useTelInputLocale } from './use-tel-input-locale';
@@ -46,14 +46,6 @@
               <span>{{ country.name }}</span>
             </div>
           </el-option>
-
-          <template #tag>
-            <span
-              v-if="selectedCountry"
-              class="el-flag"
-              :class="'el-flag--' + selectedCountry.toLocaleLowerCase()"
-            ></span>
-          </template>
         </el-select>
       </div>
     </template>

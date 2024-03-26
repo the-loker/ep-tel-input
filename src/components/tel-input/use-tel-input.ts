@@ -34,23 +34,6 @@ export const useTelInput = (
   );
   const searchValue = ref<string>('');
 
-  // const selectedCountry = computed<CountryCode | undefined>({
-  //   get() {
-  //     const countriesCodes = Object.keys(countries.value) as CountryCode[];
-
-  //     if (!props.defaultCountry) return countriesCodes[0];
-
-  //     if (!countries.value[props.defaultCountry]) {
-  //       return countriesCodes[0];
-  //     }
-
-  //     return props.defaultCountry;
-  //   },
-  //   set(value) {
-  //     return value;
-  //   },
-  // });
-
   const value = computed({
     get() {
       return phoneFromated.value;
@@ -81,8 +64,13 @@ export const useTelInput = (
 
   const countries = computed(() => {
     const countries = {} as TCountries;
+    const firstCountries = {} as TCountries;
 
     for (let i = 0; i < allCountries.length; i++) {
+      const hasFirstCountry =
+        props.firstCountries.length &&
+        props.firstCountries.includes(allCountries[i]);
+
       if (props.onlyCountries.length) {
         if (!searchValue.value) {
           if (!props.onlyCountries.includes(allCountries[i])) continue;
@@ -113,6 +101,15 @@ export const useTelInput = (
       }
 
       if (!searchValue.value) {
+        if (hasFirstCountry) {
+          firstCountries[allCountries[i]] = {
+            name: t(`countries.${allCountries[i]}`),
+            code: allCountries[i],
+          };
+
+          continue;
+        }
+
         countries[allCountries[i]] = {
           name: t(`countries.${allCountries[i]}`),
           code: allCountries[i],
@@ -134,7 +131,7 @@ export const useTelInput = (
       }
     }
 
-    return countries;
+    return { ...firstCountries, ...countries };
   });
 
   watch(selectedCountry, changePhoneCode, { deep: true });

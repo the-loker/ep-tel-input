@@ -1,31 +1,3 @@
-// import type { CountryCode } from 'libphonenumber-js';
-// import type { TInputTelLocale } from './i18n';
-
-// export interface ICountry {
-//   name: string;
-//   code: CountryCode;
-// }
-
-// export type TCountries = {
-//   [key in CountryCode]: ICountry;
-// };
-
-// export const useCountries = (locale: TInputTelLocale) => {
-//   function getCountries() {
-//     const countries: { [key in string]: ICountry } = {};
-
-//     for (let i = 0; i < allCountries.length; i++) {
-//       countries[allCountries[i]] = {
-//         name: locale[``],
-//         code: allCountries[i],
-//       };
-//     }
-
-//     return countries;
-//   }
-
-//   return { getCountries };
-// };
 export default [
   'AC',
   'AD',
